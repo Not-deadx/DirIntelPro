@@ -1,0 +1,18 @@
+# Scan results — never commit these (may contain sensitive data)
+results/
+
+# Temporary files
+/tmp/dirintel_*
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
