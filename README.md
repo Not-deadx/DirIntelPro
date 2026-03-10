@@ -17,33 +17,32 @@
 
 ## Overview
 
-DirIntel Pro is a professional-grade Bash framework for authorized directory intelligence, response fingerprinting, and security risk analysis. It transforms raw directory enumeration into structured, scored, and categorized security intelligence — helping security professionals and developers understand exposure risk across web targets.
+DirIntel Pro is a professional Bash framework for authorized directory intelligence, response fingerprinting, and security risk analysis. It turns directory enumeration into structured, scored, and categorized findings so security teams and developers can see exposure risk across web targets.
 
-This tool is designed for **analysis and classification**, not exploitation.
+The tool focuses on **analysis and classification**, not exploitation.
 
 ---
 
 ## Legal Warning
 
-> **This tool must only be used on systems you own or have explicit written permission to test.**
-> Unauthorized use is illegal under computer fraud laws including the CFAA (US), Computer Misuse Act (UK), and equivalent legislation worldwide.
-> The author assumes no liability for misuse.
+> **Use this tool only on systems you own or have explicit written permission to test.**  
+> Unauthorized use may violate computer misuse laws (e.g. CFAA, Computer Misuse Act) and similar legislation. The author is not liable for misuse.
 
 ---
 
 ## Features
 
-| Module | Capability |
-|--------|-----------|
-| **Smart Host Detection** | HEAD request, status classification (LIVE / REDIRECTING / FORBIDDEN / DEAD), server header capture, response time |
-| **Intelligent Enumeration** | Wordlist + extension expansion, Content-Type capture, page title extraction, rate-limited, threaded |
-| **Response Fingerprinting** | SHA256 body hash, content length, word count, line count, wildcard/custom-404 detection |
-| **Sensitive Pattern Detector** | High-risk keyword scanning in body, sensitive path keywords, sensitive file extensions |
-| **Risk Scoring System** | Per-path score (0–30+), four severity levels: LOW / MEDIUM / HIGH / CRITICAL |
-| **Advanced Analysis** | Directory listing detection, Git repository exposure, misconfigured backup file detection |
-| **Clean Output Structure** | Categorized by status code, severity, and type — all in organized per-domain directories |
-| **Markdown Report** | Full scan report with risk distribution chart, findings, and developer recommendations |
-| **Professional UX** | Colored output, real-time progress bar, Ctrl+C trap, timestamped logs, dependency check |
+| Module | Description |
+|--------|-------------|
+| **Smart Host Detection** | HEAD checks with status (LIVE / REDIRECTING / FORBIDDEN / DEAD), Server header, response time |
+| **Intelligent Enumeration** | Wordlist + extensions, Content-Type, page title, rate-limited, multi-threaded |
+| **Response Fingerprinting** | SHA256 body hash, size, word/line count, wildcard and custom-404 detection |
+| **Sensitive Pattern Detector** | High-risk keywords in body, sensitive path keywords, sensitive file extensions |
+| **Risk Scoring** | Per-path score (0–30+), severity: LOW / MEDIUM / HIGH / CRITICAL |
+| **Advanced Analysis** | Directory listing, Git exposure, backup file checks, robots.txt & sitemap.xml fetch |
+| **Output Structure** | Results grouped by status code and severity in per-domain folders |
+| **Reports** | Markdown report with risk chart, findings, and recommendations |
+| **UX** | Colored output, progress bar, Ctrl+C handling, timestamped logs, dependency check |
 
 ---
 
@@ -57,17 +56,17 @@ This tool is designed for **analysis and classification**, not exploitation.
 | `grep` | Pattern matching |
 | `date` | Timestamps |
 | `wc` | Counting |
-| `sha256sum` | Body hashing |
+| `sha256sum` | Body hashing (fallback: openssl/python if missing) |
 
-Most are available by default on Linux/macOS. On Windows, use WSL or Git Bash.
+On Debian/Ubuntu/Kali the script can attempt to install missing tools via `apt-get`. On Windows use WSL or Git Bash.
 
 ---
 
 ## Installation
 
 ```bash
-git clone https://github.com/youruser/dirintel-pro.git
-cd dirintel-pro
+git clone https://github.com/devilsin0009-hue/DirIntelPro.git
+cd DirIntelPro
 chmod +x DirIntelPro.sh
 ```
 
@@ -75,15 +74,15 @@ chmod +x DirIntelPro.sh
 
 ## Usage
 
-```
+```text
 ./DirIntelPro.sh --authorized [OPTIONS]
 ```
 
-### Required Flags
+### Required
 
 | Flag | Description |
 |------|-------------|
-| `--authorized` | Confirms you have written permission to test the target |
+| `--authorized` | Confirm you have permission to test the target |
 | `--wordlist <file>` | Path to directory wordlist |
 
 ### Target (one required)
@@ -91,43 +90,44 @@ chmod +x DirIntelPro.sh
 | Flag | Description |
 |------|-------------|
 | `--url <url>` | Single target URL |
-| `--domain-list <file>` | File with one domain/URL per line |
+| `--domain-list <file>` | File with one domain or URL per line |
 
 ### Options
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--extensions <ext,...>` | none | Comma-separated extensions to append (e.g. `php,html,txt`) |
-| `--delay <seconds>` | `1` | Delay between requests (minimum: 0.5s) |
-| `--threads <n>` | `5` | Parallel threads (maximum: 10) |
-| `--verbose` | off | Enable verbose output |
+| `--extensions <ext,...>` | none | Extensions to try (e.g. `php,html,txt`) |
+| `--subdomain-scan <file>` | — | Subdomain wordlist for subdomain enumeration |
+| `--delay <seconds>` | `1` | Delay between requests (min 0.5) |
+| `--threads <n>` | `5` | Parallel threads (max 10) |
+| `--verbose` | off | Verbose output |
 | `--help` | — | Show help |
 
 ### Examples
 
 ```bash
 # Single target
-./DirIntelPro.sh --authorized --url https://example.com --wordlist common.txt
+./DirIntelPro.sh --authorized --url https://example.com --wordlist wordlist.txt
 
 # With extensions
-./DirIntelPro.sh --authorized --url https://example.com --wordlist dirs.txt --extensions php,html,txt
+./DirIntelPro.sh --authorized --url https://example.com --wordlist wordlist.txt --extensions php,html,txt
+
+# With subdomain scan
+./DirIntelPro.sh --authorized --url https://example.com --wordlist wordlist.txt --subdomain-scan subdomains.txt
 
 # Multiple targets
-./DirIntelPro.sh --authorized --domain-list targets.txt --wordlist dirs.txt --delay 2 --threads 3
-
-# Verbose mode
-./DirIntelPro.sh --authorized --url https://example.com --wordlist dirs.txt --verbose
+./DirIntelPro.sh --authorized --domain-list domains.txt --wordlist wordlist.txt --delay 2 --threads 3
 ```
 
 ---
 
 ## Output Structure
 
-```
+```text
 results/
-├── live_hosts.txt                   # All live targets with server info
-├── dead_hosts.txt                   # Unreachable targets
-├── subdomains/                      # Subdomain scan results (if --subdomain-scan used)
+├── live_hosts.txt
+├── dead_hosts.txt
+├── subdomains/                    # if --subdomain-scan used
 │   └── <domain>/
 │       ├── live_subdomains.txt
 │       ├── dead_subdomains.txt
@@ -137,122 +137,102 @@ results/
 │       └── subdomain_report.md
 └── <domain>/
     ├── categorized/
-    │   ├── 200.txt                  # Accessible paths
-    │   ├── 403.txt                  # Forbidden paths
-    │   ├── redirects.txt            # Redirect paths
-    │   └── other.txt                # Other status codes
-    ├── severity/                    # ← Bug findings sorted by severity
-    │   ├── critical/
-    │   │   └── findings.txt         # Score 21+  (CRITICAL bugs)
-    │   ├── high/
-    │   │   └── findings.txt         # Score 13–20 (HIGH bugs)
-    │   ├── medium/
-    │   │   └── findings.txt         # Score 6–12  (MEDIUM bugs)
-    │   └── low/
-    │       └── findings.txt         # Score 0–5   (LOW bugs)
-    ├── fingerprint_analysis.txt     # SHA256, size, word/line count per 200 response
-    ├── sensitive_files.txt          # Exposed sensitive file extensions
-    ├── high_risk_paths.txt          # Paths matching sensitive keywords or body keywords
+    │   ├── 200.txt
+    │   ├── 403.txt
+    │   ├── redirects.txt
+    │   └── other.txt
+    ├── severity/
+    │   ├── critical/findings.txt   # score 21+
+    │   ├── high/findings.txt       # score 13–20
+    │   ├── medium/findings.txt    # score 6–12
+    │   └── low/findings.txt       # score 0–5
+    ├── fingerprint_analysis.txt
+    ├── sensitive_files.txt
+    ├── high_risk_paths.txt
     ├── directory_listing_exposed.txt
     ├── git_exposure.txt
-    ├── report.md                    # Full markdown intelligence report
-    └── logs.txt                     # Timestamped request log
+    ├── robots.txt
+    ├── sitemap.xml
+    ├── report.md
+    └── logs.txt
 ```
 
 ---
 
 ## Risk Scoring
 
-Each discovered path receives a risk score based on:
-
 | Condition | Score |
 |-----------|-------|
-| 200 OK response | +2 |
-| 403 Forbidden response | +1 |
-| Sensitive path keyword match | +5 |
+| 200 OK | +2 |
+| 403 Forbidden | +1 |
+| Sensitive path keyword | +5 |
 | Admin/panel/console/dashboard path | +7 |
-| Sensitive file extension (`.env`, `.sql`, `.bak`, etc.) | +10 |
-| High-risk keyword found in response body | +15 |
+| Sensitive file extension | +10 |
+| High-risk keyword in response body | +15 |
 
-### Severity Levels
+### Severity
 
-| Score | Level | Color |
-|-------|-------|-------|
-| 0–5 | LOW | Green |
-| 6–12 | MEDIUM | Yellow |
-| 13–20 | HIGH | Red |
-| 21+ | CRITICAL | Magenta/Bold |
+| Score | Level |
+|-------|--------|
+| 0–5 | LOW |
+| 6–12 | MEDIUM |
+| 13–20 | HIGH |
+| 21+ | CRITICAL |
 
 ---
 
-## Sensitive Patterns Detected
+## Sensitive Patterns
 
-### High-Risk Body Keywords
-`password`, `token`, `secret`, `api_key`, `db_host`, `private_key`, `authorization`, `bearer`, `passwd`, `credentials`, `access_key`, `auth_token`, `session`
+**Body keywords:** `password`, `token`, `secret`, `api_key`, `db_host`, `private_key`, `authorization`, `bearer`, `credentials`, `access_key`, `auth_token`, `session`
 
-### Sensitive Path Keywords
-`admin`, `backup`, `config`, `.git`, `.env`, `debug`, `database`, `private`, `internal`, `secret`, `uploads`, `test`, `dev`, `staging`, `api`, `console`, `panel`
+**Path keywords:** `admin`, `backup`, `config`, `.git`, `.env`, `debug`, `database`, `private`, `internal`, `uploads`, `test`, `dev`, `staging`, `api`, `console`, `panel`
 
-### Sensitive Extensions
-`.env`, `.zip`, `.sql`, `.bak`, `.tar`, `.gz`, `.log`, `.key`, `.pem`, `.conf`, `.cfg`, `.ini`, `.xml`, `.json`, `.yaml`, `.yml`
+**Extensions:** `.env`, `.zip`, `.sql`, `.bak`, `.tar`, `.gz`, `.log`, `.key`, `.pem`, `.conf`, `.cfg`, `.ini`, `.xml`, `.json`, `.yaml`, `.yml`
 
 ---
 
 ## Advanced Checks
 
-### Directory Listing Detection
-Scans 200 responses for `"Index of /"` — a common misconfiguration that exposes directory contents.
-
-### Git Repository Exposure
-Probes `/.git/HEAD` for accessibility. If accessible and contains a `ref:` pointer, your source code history may be fully downloadable.
-
-### Backup File Detection
-Probes common backup file names (`backup.zip`, `db.sql`, `.env.bak`, `wp-config.php.bak`, etc.) before enumeration begins.
-
-### Wildcard Response Detection
-If 3 or more paths return identical SHA256 hashes and content lengths, the tool flags possible wildcard/custom-404 behavior to reduce false positives.
+- **Directory listing:** Looks for `Index of /` in 200 responses.
+- **Git exposure:** Checks `/.git/HEAD`; if 200 and contains `ref:`, source may be exposed.
+- **Backup files:** Probes common names (`backup.zip`, `db.sql`, `.env.bak`, etc.).
+- **robots.txt & sitemap.xml:** Fetched and saved; Disallow paths are noted.
+- **Wildcard detection:** Flags when many paths share the same hash/size (possible wildcard/custom 404).
 
 ---
 
 ## How Developers Can Prevent Exposure
 
-1. **Restrict admin panels** with MFA and IP allowlisting
-2. **Move config/backup files** outside the web root
-3. **Block `.git` access** via server config (`deny all` for `/.git`)
-4. **Disable directory listing** (`Options -Indexes` / `autoindex off`)
-5. **Never return credentials** in HTTP responses
-6. **Restrict upload directories** and validate file types server-side
-7. **Remove debug/test endpoints** from production
-8. **Enforce HTTPS** with HSTS headers
-9. **Return 404** instead of 403 for sensitive paths to avoid path confirmation
-10. **Add security headers**: `X-Content-Type-Options`, `X-Frame-Options`, `Content-Security-Policy`
+1. Restrict admin/panel/console with strong auth and IP allowlisting.
+2. Keep config and backup files outside the web root.
+3. Block `/.git` in server config (e.g. `deny all` or return 404).
+4. Disable directory listing (`Options -Indexes` / `autoindex off`).
+5. Do not return credentials or secrets in HTTP responses.
+6. Restrict upload dirs and validate file types server-side.
+7. Remove or protect debug/test endpoints in production.
+8. Enforce HTTPS and use HSTS.
+9. Prefer 404 over 403 for sensitive paths to avoid confirming existence.
+10. Add security headers: `X-Content-Type-Options`, `X-Frame-Options`, `Content-Security-Policy`, `Referrer-Policy`.
 
 ---
 
 ## False Positive Disclaimer
 
-This tool performs automated analysis and may produce false positives. All findings should be manually verified before taking action. A 200 response does not necessarily indicate a security vulnerability — context and content must be evaluated. Risk scores are indicative only and should be interpreted by a qualified security professional.
+Results are automated and may include false positives. Verify findings before acting. A 200 response does not by itself mean a vulnerability; interpret risk scores with context and professional judgment.
 
 ---
 
 ## Ethical Use
 
-DirIntel Pro is built for:
-- **Penetration testers** conducting authorized engagements
-- **Security researchers** analyzing their own infrastructure
-- **Developers** auditing their own web applications for misconfigurations
-- **Bug bounty hunters** working within defined scope
+**Intended for:** authorized pentests, security research on your own systems, developers auditing their apps, bug bounty within scope.
 
-It is **not** designed for:
-- Unauthorized scanning of third-party systems
-- Aggressive or denial-of-service style attacks
-- WAF bypass or evasion techniques
+**Not for:** unauthorized scanning, DoS-style activity, or WAF bypass/evasion.
 
 ---
 
 ## License
 
-MIT License — Use responsibly. See [LICENSE](LICENSE).
+MIT License. Use responsibly. See [LICENSE](LICENSE).
 
 ---
 
