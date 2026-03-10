@@ -1,19 +1,5 @@
 # DirIntel Pro
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-2.0.0-red?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/platform-Kali%20Linux-blue?style=for-the-badge&logo=linux" />
-  <img src="https://img.shields.io/badge/language-Bash-green?style=for-the-badge&logo=gnu-bash" />
-  <img src="https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/use-Authorized%20Only-critical?style=for-the-badge" />
-</p>
-
-<p align="center">
-  <b>Advanced Directory Intelligence & Risk Analysis Framework</b><br/>
-  Authorized security testing — directory enumeration, fingerprinting, risk scoring & subdomain discovery
-</p>
-
----
 
 ## Overview
 

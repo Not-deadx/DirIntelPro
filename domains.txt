@@ -1,0 +1,8 @@
+# SecureDirInspector — Target Domains List
+# Add one domain per line. Lines starting with # are ignored.
+# Only include domains you OWN or have WRITTEN PERMISSION to test.
+#
+# Examples:
+# https://example.com
+# http://testsite.local
+# yourdomain.com
