@@ -51,7 +51,7 @@ On Debian/Ubuntu/Kali the script can attempt to install missing tools via `apt-g
 ## Installation
 
 ```bash
-git clone https://github.com/devilsin0009-hue/DirIntelPro.git
+git clone https://github.com/Not-deadx/DirIntelPro.git
 cd DirIntelPro
 chmod +x DirIntelPro.sh
 ```
